@@ -9,9 +9,32 @@ namespace AtpParser.Models
     public class match
     {
         public string Atp { get; set; }
-        //public string Location { get; set; }
-        //public string Tournament { get; set; }
-        //public string Date;string Series; string Court; string Surface; string Round; string BestOf; string Winner; string Loser; string WRank; string LRank; string WPts; string LPts; string W1; string L1; string W2; string L2; string W3; string L3; string W4; string L4; string W5; string L5; string Wsets; string Lsets; string Comment; string B365W; string B365L; string PSW; string PSL; string MaxW; string MaxL; string AvgW; string AvgL;
-
+        public string Location { get; set; }
+        public string Tournament { get; set; }
+        public string Date;
+        public string Series { get; set; }
+        public string Court { get; set; }
+        public string Surface { get; set; }
+        public string Round { get; set; }
+        public string BestOf { get; set; }
+        public string Winner { get; set; }
+        public string Loser { get; set; }
+        public string WRank { get; set; }
+        public string LRank { get; set; }
+        public string WPts { get; set; }
+        public string LPts { get; set; }
+        public string[] W { get; set; }
+        public string[] L { get; set; }
+        public string Wsets { get; set; }
+        public string Lsets { get; set; }
+        public string Comment { get; set; }
+        public string B365W { get; set; }
+        public string B365L { get; set; }
+        public string PSW { get; set; }
+        public string PSL { get; set; }
+        public string MaxW { get; set; }
+        public string MaxL { get; set; }
+        public string AvgW { get; set; }
+        public string AvgL;
     }
 }

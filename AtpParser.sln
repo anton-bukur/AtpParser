@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtpParser", "AtpParser.csproj", "{F42538F9-F576-4404-804D-402679A078FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CornerParser", "..\..\Bukur\CornerParser\CornerParser.csproj", "{D9137955-419D-4D4A-8FD3-7E7E278D8ECE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{F42538F9-F576-4404-804D-402679A078FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F42538F9-F576-4404-804D-402679A078FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F42538F9-F576-4404-804D-402679A078FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9137955-419D-4D4A-8FD3-7E7E278D8ECE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9137955-419D-4D4A-8FD3-7E7E278D8ECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9137955-419D-4D4A-8FD3-7E7E278D8ECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9137955-419D-4D4A-8FD3-7E7E278D8ECE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
