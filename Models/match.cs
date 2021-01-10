@@ -28,6 +28,7 @@ namespace AtpParser.Models
         public string Wsets { get; set; }
         public string Lsets { get; set; }
         public string Comment { get; set; }
+        public List<string> HomeAway { get; set; }
         public string B365W { get; set; }
         public string B365L { get; set; }
         public string PSW { get; set; }
@@ -35,6 +36,6 @@ namespace AtpParser.Models
         public string MaxW { get; set; }
         public string MaxL { get; set; }
         public string AvgW { get; set; }
-        public string AvgL;
+        public string AvgL { get; set; }
     }
 }

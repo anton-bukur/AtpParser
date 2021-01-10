@@ -22,7 +22,11 @@ namespace AtpParser
     {
         public MainWindow()
         {
-            string result = proc.GetMatchStatistics(""); 
+            List<string> listStat = new List<string>();
+            string result = proc.GetMatchStatistics("");
+            listStat.Add(result);
+            proc.Excel(listStat);
+
             InitializeComponent();
         }
         public static void GetTours()
