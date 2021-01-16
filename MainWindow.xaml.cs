@@ -20,11 +20,26 @@ namespace AtpParser
     /// </summary>
     public partial class MainWindow : Window
     {
+        const string homeUrl = "https://www.tennisexplorer.com/";
         public MainWindow()
         {
+            string Year = "2020";
+            string url = homeUrl + "calendar/atp-men/"+Year+"/";
             List<string> listStat = new List<string>();
-            string result = proc.GetMatchStatistics("");
-            listStat.Add(result);
+            List<string> listTournaments = proc.GetTournaments(url);
+            foreach (string u in listTournaments)
+            {
+                List<string> listMatches = proc.GetMatches(homeUrl+u);
+
+                string Tournament = listMatches[listMatches.Count - 1];
+                listMatches.RemoveAt(listMatches.Count - 1);
+                foreach (string s in listMatches)
+                {
+                    string result = proc.GetMatchStatistics(homeUrl + s, Tournament);
+                    listStat.Add(result);
+                }
+            }
+            
             proc.Excel(listStat);
 
             InitializeComponent();

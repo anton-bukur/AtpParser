@@ -9,28 +9,19 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
+
 
 namespace AtpParser
 {
+    
     class proc
     {
-        public static string GetMatchStatistics(string url)
+        const string homeUrl = "https://www.tennisexplorer.com/"; 
+        public static List<string> GetTournaments(string url)
         {
-            //!!Временно, потом сюда передать надо!!!
-            string Tournament = "Doha 2020 (Qatar)";
-
-            string tStr; int i = 0;
-            url = "https://www.tennisexplorer.com/match-detail/?id=1864302";
-            //var proxyHand = new WebProxy
-            //{
-            //    Address = null,
-            //    BypassProxyOnLocal = false,
-            //    UseDefaultCredentials = false
-            //};
-
             var cookieContainer = new CookieContainer();
-
             HttpClientHandler handler = new HttpClientHandler
             {
                 UseProxy = false,
@@ -41,38 +32,125 @@ namespace AtpParser
             HttpClient client = new HttpClient(handler);
             var Result = client.GetAsync(url).Result;
             var RespText = Result.Content.ReadAsStringAsync().Result;
+            var tMatches = Regex.Matches(RespText, "(?<=<th class=\"t-name\" rowspan=\"2\"><a href=\")[\\w\\W]*?(?=\")");
+            //List<string> listTournaments = new List<string>();
+            var listTournaments = new List<string>().Concat(tMatches.Cast<Match>().Select(x => x.Value).ToList()).ToList();
+            return listTournaments;
+        }
+        public static List<string> GetMatches(string url)
+        {
+            //url = "https://www.tennisexplorer.com/doha/2020/atp-men/";
+            var cookieContainer = new CookieContainer();
+            HttpClientHandler handler = new HttpClientHandler
+            {
+                UseProxy = false,
+                AllowAutoRedirect = false,
+                UseCookies = true,
+                CookieContainer = cookieContainer
+            };
+            HttpClient client = new HttpClient(handler);
+            string RespText = "";
+            try
+            {
+                var Result = client.GetAsync(url).Result;
+                RespText = Result.Content.ReadAsStringAsync().Result;
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText("log.txt", url + "|" + ex.Message + Environment.NewLine);
+                return null;
+                Thread.Sleep(5000);
+            }
+            var tMatches = Regex.Matches(RespText, "(?<=<td rowspan=\"2\"><a href=\")[\\w\\W]*?(?=\")");
+            string Tournament = Regex.Match(RespText, "(?<=<h1 class=\"bg\">)[\\w\\W]*?(?=<)").Value;
+            List<string> listMatches = new List<string>();
+            listMatches = listMatches.Concat(tMatches.Cast<Match>().Select(x => x.Value).ToList()).ToList();
+            //и ещё такие матчи честь, оказывается
+            tMatches = Regex.Matches(RespText, "(?<=<td><a href=\")[\\w\\W]*?(?=\")");
+            listMatches = listMatches.Concat(tMatches.Cast<Match>().Select(x => x.Value).ToList()).ToList();
+            //последний член типа - имя турнира
+            listMatches.Add(Tournament);
+            return listMatches;
+        }
+        public static string GetMatchStatistics(string url, string Tournament)
+        {
+            //!!Временно, потом сюда передать надо!!!
+
+            string tStr; int i = 0;
+            //url = "https://www.tennisexplorer.com/match-detail/?id=1864310";
+            //var proxyHand = new WebProxy
+            //{
+            //    Address = null,
+            //    BypassProxyOnLocal = false,
+            //    UseDefaultCredentials = false
+            //};
+            var cookieContainer = new CookieContainer();
+            HttpClientHandler handler = new HttpClientHandler
+            {
+                UseProxy = false,
+                AllowAutoRedirect = false,
+                UseCookies = true,
+                CookieContainer = cookieContainer
+            };
+            HttpClient client = new HttpClient(handler);
+            string RespText = "";
+            
+            try
+            {
+                var Result = client.GetAsync(url).Result;
+                RespText = Result.Content.ReadAsStringAsync().Result;
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText("log.txt", url +"|"+ ex.Message + Environment.NewLine);
+                return Tournament + ex.Message;
+                Thread.Sleep(3000);
+            }
 
             tStr = Regex.Match(RespText, "(?<=<div class=\"box boxBasic lGray\"><span class=\"upper\">)[\\w\\W]*?(?=<iframe)").Value.Replace(" ", "");
             match sMatch = new match();
             //sMatch.Atp = Regex.Match(RespText,"").Value;
             string[] tStrArr = tStr.Split(',');
             sMatch.Date = tStrArr[0].Substring(0, 10);
-            sMatch.Surface = tStrArr[4];
-            sMatch.Round = tStrArr[3];
+            //когда время матча нету, ой!
+            var cnt = tStrArr.Length;
+            sMatch.Surface = tStrArr[cnt-1];
+            sMatch.Round = tStrArr[cnt-2];
             MatchCollection players = Regex.Matches(RespText, "(?<=<th class=\"plName\" colspan=\"2\">)[\\w\\W]*?(?=</a)");
             sMatch.Winner = players[0].Value.Split('>')[1];
             sMatch.Loser = players[1].Value.Split('>')[1];
-            tStr = Regex.Match(RespText, "(?<=<td class=\"gScore\">)[\\w\\W]*?(?=\\)</span></td>)").Value;
-            tStrArr = tStr.Split('(');
-            sMatch.Wsets = tStrArr[0].Split('<')[0].Split(':')[0].Replace(" ", "");
-            sMatch.Lsets = tStrArr[0].Split('<')[0].Split(':')[1].Replace(" ", "");
-            tStrArr = tStrArr[1].Split(',');
-            sMatch.W = new string[5];
-            sMatch.L = new string[5];
-            for (i = 0; i < tStrArr.Length; i++)
-            {
-                tStr = tStrArr[i].Split('-')[0].Replace(" ", "");
-                sMatch.W[i] = tStrArr[i].Split('-')[0].Replace(" ", "");
-                sMatch.L[i] = tStrArr[i].Split('-')[1].Replace(" ", "");
-            }
             string res = $"{Tournament},{sMatch.Date},{sMatch.Surface},{sMatch.Round},{sMatch.Winner},{sMatch.Loser},";
-            for (i = 0; i < 5; i++)
-                res = res + $"{sMatch.W[i]},{sMatch.L[i]},";
-            res = res + $"{sMatch.Wsets},{sMatch.Lsets},";
+
+            tStr = Regex.Match(RespText, "(?<=<td class=\"gScore\">)[\\w\\W]*?(?=\\)</span></td>)").Value;
+            if (tStr.Length>0)
+            {
+                tStrArr = tStr.Split('(');
+                sMatch.Wsets = tStrArr[0].Split('<')[0].Split(':')[0].Replace(" ", "");
+                sMatch.Lsets = tStrArr[0].Split('<')[0].Split(':')[1].Replace(" ", "");
+                tStrArr = tStrArr[1].Split(',');
+                sMatch.W = new string[5];
+                sMatch.L = new string[5];
+                for (i = 0; i < tStrArr.Length; i++)
+                {
+                    tStr = tStrArr[i].Split('-')[0].Replace(" ", "");
+                    sMatch.W[i] = tStrArr[i].Split('-')[0].Replace(" ", "");
+                    sMatch.L[i] = tStrArr[i].Split('-')[1].Replace(" ", "");
+                }
+                for (i = 0; i < 5; i++)
+                    res = res + $"{sMatch.W[i]},{sMatch.L[i]},";
+                res = res + $"{sMatch.Wsets},{sMatch.Lsets},";
+            }
+
             // Betting Odds пошли - самое интересное
             tStr = Regex.Match(Regex.Match(RespText, "(?<=oddsMenu-')[\\w\\W]*?(?=</tbody>)").Value, "(?<=</tr>)[\\w\\W]*").Value;
             //Home/Away
             var bookMakers = Regex.Matches(tStr, "(?<=<span class=\"t\">)[\\w\\W]*?(?=<)");
+            if (bookMakers.Count == 0)
+            {
+                File.AppendAllText("log.txt", " No Bookmakers found " + url + Environment.NewLine);
+                return res;
+            }
+                
             var betWin = Regex.Matches(tStr, "(?<=<td class=\"k1)[\\w\\W]*?(?=</div></td>)");
             var betLos = Regex.Matches(tStr, "(?<=<td class=\"k2)[\\w\\W]*?(?=</div></td>)");
             string WopenDate = null, Wdelta = null;
@@ -81,6 +159,9 @@ namespace AtpParser
             for (i = 0; i < bookMakers.Count; i++)
             {
                 res = res + $"{bookMakers[i]},";
+                //if (bookMakers[i].Value.Contains("Interwetten")) {
+                //    Thread.Sleep(2);
+                //}
                 string WfinDate = Regex.Match(betWin[i].Value, "(?<=<table cellspacing=\"0\"><tr><td>)[\\w\\W]*?(?=<)").Value;
                 if (WfinDate.Length > 0)
                 {
@@ -96,12 +177,13 @@ namespace AtpParser
                     if (betWin[i].Value.Contains("deactivated"))
                     {
                         res = res + $"deactivated,{wBet},{lBet},,,,,,,,";
+                        continue; //Больше не надо, и так всё ясно
                     }
                     else
                     {
-                        res = res + $"unchanged,{wBet},{lBet},,,,,,,,";
+                        res = res + $"unchanged,{wBet},,,,";
                     }
-                    continue; //Больше не надо, и так всё ясно
+                    
                 }
                 string LfinDate = Regex.Match(betLos[i].Value, "(?<=<table cellspacing=\"0\"><tr><td>)[\\w\\W]*?(?=<)").Value;
                 if (LfinDate.Length > 0)
@@ -117,11 +199,7 @@ namespace AtpParser
                     var lBet = Regex.Match(betLos[i].Value, "(?<=n\">)[\\w\\W]*").Value;
                     res = res + $"unchanged,{lBet},,,,";
                 }
-
-
-
-
-            }
+           }
             return res;
         }
 
