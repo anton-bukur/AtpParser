@@ -25,6 +25,8 @@ namespace AtpParser.Models
         public string LPts { get; set; }
         public string[] W { get; set; }
         public string[] L { get; set; }
+        public string[] WT { get; set; }
+        public string[] LT { get; set; }
         public string Wsets { get; set; }
         public string Lsets { get; set; }
         public string Comment { get; set; }
