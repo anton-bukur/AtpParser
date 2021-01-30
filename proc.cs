@@ -233,7 +233,7 @@ namespace AtpParser
             {
                 if (t.Contains("Over/Under"))
                 {//Over/Under
-                    res = res + "OVER/UNDER,"+ GetOverUnder(t);
+                    res = GetOverUnder(t);
                     
                 }
 
@@ -242,6 +242,7 @@ namespace AtpParser
             string GetOverUnder(string t)
             {
                 var tBets = Regex.Matches(t, "(?<=<tr class=\"odds-type\">)[\\w\\W]*?(?=<tr class=\"average\">)");
+                res = res + "OVER/UNDER,";
                 foreach (var tb in tBets.Cast<Match>().Select(f => f.Value))
                 {
                     var OverUnderType = Regex.Match(tb, "(?<=<td colspan=\"4\">)[\\w\\W]*?(?=<)").Value;
