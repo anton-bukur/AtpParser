@@ -76,7 +76,7 @@ namespace AtpParser
         public static string GetMatchStatistics(string url, string Tournament)
         {
             //!!Временно, потом сюда передать надо!!!
-            url = "https://www.tennisexplorer.com/match-detail/?id=1862770";
+            //url = "https://www.tennisexplorer.com/match-detail/?id=1914452";
             string tStr; int i = 0;
 
             //var proxyHand = new WebProxy
@@ -120,7 +120,7 @@ namespace AtpParser
             MatchCollection players = Regex.Matches(RespText, "(?<=<th class=\"plName\" colspan=\"2\">)[\\w\\W]*?(?=</a)");
             sMatch.Winner = players[0].Value.Split('>')[1];
             sMatch.Loser = players[1].Value.Split('>')[1];
-            var tables = Regex.Matches(RespText, "(?<=<tbody>)[\\w\\W]*?(?=</tbody>)"); // полезная коллекция, Слава Богу, тут вся статистика лежит праактически
+            var tables = Regex.Matches(RespText, "(?<=<tbody>)[\\w\\W]*?(?=</tbody>)"); // полезная коллекция, Слава Богу, тут вся статистика лежит практически
             tStr = Regex.Match(tables[0].Value, "(?<=<td class=\"thumb)[\\w\\W]*?(?=<td class=\"thumb)").Value;
             var tRanks = Regex.Matches(tStr, "(?<=class=\"t)[\\w\\W]*?(?=\\.)");
             sMatch.WRank = tRanks[0].Value.Split('>')[1];
@@ -178,7 +178,7 @@ namespace AtpParser
             if (bookMakers.Count == 0)
             {
                 File.AppendAllText("log.txt", " No Bookmakers found " + url + Environment.NewLine);
-                return res;
+                return res + "No Bookmakers found";
             }
 
             var betWin = Regex.Matches(tStr, "(?<=<td class=\"k1)[\\w\\W]*?(?=</div></td>)");
@@ -189,9 +189,6 @@ namespace AtpParser
             for (i = 0; i < bookMakers.Count; i++)
             {
                 res = res + $"{bookMakers[i]},";
-                //if (bookMakers[i].Value.Contains("Interwetten")) {
-                //    Thread.Sleep(2);
-                //}
                 string WfinDate = Regex.Match(betWin[i].Value, "(?<=<table cellspacing=\"0\"><tr><td>)[\\w\\W]*?(?=<)").Value;
                 if (WfinDate.Length > 0)
                 {
@@ -230,6 +227,90 @@ namespace AtpParser
                     res = res + $"unchanged,{lBet},,,,";
                 }
             }
+
+            //пошли остальное собирать
+            foreach (var t in tables.Cast<Match>().Select(f => f.Value))
+            {
+                if (t.Contains("Over/Under"))
+                {//Over/Under
+                    res = res + "OVER/UNDER,"+ GetOverUnder(t);
+                    
+                }
+
+            }
+
+            string GetOverUnder(string t)
+            {
+                var tBets = Regex.Matches(t, "(?<=<tr class=\"odds-type\">)[\\w\\W]*?(?=<tr class=\"average\">)");
+                foreach (var tb in tBets.Cast<Match>().Select(f => f.Value))
+                {
+                    var OverUnderType = Regex.Match(tb, "(?<=<td colspan=\"4\">)[\\w\\W]*?(?=<)").Value;
+                    res = res + OverUnderType + ",";
+                    string tRes = OverUnderType + Environment.NewLine;
+                    bookMakers = Regex.Matches(tb, "(?<=<span class=\"t\">)[\\w\\W]*?(?=<)");
+                    var betOver = Regex.Matches(tb, "(?<=td class=\"k1)[\\w\\W]*?(?=</div></td>)");
+                    var betUnder = Regex.Matches(tb, "(?<=td class=\"k2)[\\w\\W]*?(?=</div></td>)");
+                    //var betOver = Regex.Matches(tb, "(?<=<div class=\"odds-in odown\">)[\\w\\W]*?(?=></div></div></td>)");
+                    //var betUnder = Regex.Matches(tb, "(?<=<div class=\"odds-in oup\">)[\\w\\W]*?(?=></div></div></td>)");
+                    WopenDate = null; Wdelta = null;
+
+                    for (i = 0; i < bookMakers.Count; i++)
+                    {
+                        res = res + $"{bookMakers[i]},";
+                        tRes = tRes + $"{bookMakers[i]},";
+                        string WfinDate = Regex.Match(betOver[i].Value, "(?<=<table cellspacing=\"0\"><tr><td>)[\\w\\W]*?(?=<)").Value;
+                        if (WfinDate.Length > 0)
+                        {
+                            WopenDate = Regex.Match(betOver[i].Value, "(?<=Opening odds</td></tr><tr><td>)[\\w\\W]*?(?=<)").Value;
+                            MatchCollection wBets = Regex.Matches(betOver[i].Value, "(?<=<td class=\"bold\">)[\\w\\W]*?(?=<)"); //0й - fin, 1й - open
+                            Wdelta = Regex.Matches(betOver[i].Value, "(?<=><td class=\"diff-)[\\w\\W]*?(?=</td)")[0].Value.Split('>')[1];
+
+                            res = res + $"{WopenDate},{wBets[1].Value},{WfinDate},{wBets[0].Value},{Wdelta},";
+                            tRes = tRes + $"{WopenDate},{wBets[1].Value},{WfinDate},{wBets[0].Value},{Wdelta},";
+                        }
+                        else // ставка не менялась или отменена!
+                        {
+                            var wBet = Regex.Match(betOver[i].Value, "(?<=n\">)[\\w\\W]*").Value;
+                            var lBet = Regex.Match(betUnder[i + 1].Value, "(?<=n\">)[\\w\\W]*").Value;
+                            if (betOver[i].Value.Contains("deactivated"))
+                            {
+                                tRes = tRes + $"deactivated,{wBet},{lBet},,,,,,,," + Environment.NewLine;
+                                res = res + $"deactivated,{wBet},{lBet},,,,,,,,";
+                                continue; //Больше не надо, и так всё ясно
+                            }
+                            else
+                            {
+                                tRes = tRes + $"unchanged,{wBet},,,,";
+                                res = res + $"unchanged,{wBet},,,,";
+                            }
+
+                        }
+                        string LfinDate = Regex.Match(betUnder[i + 1].Value, "(?<=<table cellspacing=\"0\"><tr><td>)[\\w\\W]*?(?=<)").Value;
+                        if (LfinDate.Length > 0)
+                        {
+                            string LopenDate = Regex.Match(betUnder[i + 1].Value, "(?<=Opening odds</td></tr><tr><td>)[\\w\\W]*?(?=<)").Value;
+                            MatchCollection lBets = Regex.Matches(betUnder[i + 1].Value, "(?<=<td class=\"bold\">)[\\w\\W]*?(?=<)"); //0й - fin, 1й - open
+                            string Ldelta = Regex.Matches(betUnder[i + 1].Value, "(?<=><td class=\"diff-)[\\w\\W]*?(?=</td)")[0].Value.Split('>')[1];
+                            //Over/Under,Bookmaker,WopenDate,wOpenBet,wfinDate,WfinBet,Wdelta, LopenDate,lOpenBet,LfinDate,lfinBet,Ldelta
+                            tRes = tRes + $"{ LopenDate},{lBets[1].Value},{LfinDate},{lBets[0].Value},{Ldelta}," + Environment.NewLine; ;
+                            res = res + $"{ LopenDate},{lBets[1].Value},{LfinDate},{lBets[0].Value},{Ldelta},";
+                        }
+                        else //не менялась
+                        {
+                            var lBet = Regex.Match(betUnder[i + 1].Value, "(?<=n\">)[\\w\\W]*").Value;
+                            tRes = tRes + $"unchanged,{lBet},,,," + Environment.NewLine;
+                            res = res + $"unchanged,{lBet},,,,";
+                        }
+                    }
+                    //File.AppendAllText("bet.txt", tRes + Environment.NewLine);
+                }
+                if (tBets.Count == 0)
+                {
+                    res = res + "Null,";
+                }
+                return res;
+            }
+           
             return res;
         }
 
