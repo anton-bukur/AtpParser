@@ -5,8 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AtpParser"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+        Title="MainWindow" Height="450" Width="795">
+    <Grid Margin="10,0,0,2">
+        <Button Content="Старт" Command="{Binding ManageCommand}" CommandParameter="Start" HorizontalAlignment="Left" Margin="356,364,0,0" VerticalAlignment="Top" Width="75"/>
+        <RadioButton CommandParameter="39358" VerticalAlignment="Top" HorizontalAlignment="Left"
+            Content="Year" Margin="5,10,685,394"/>
+        <RadioButton CommandParameter="39353"
+            Content="Tournament" Margin="5,37,690,367"/>
+        <RadioButton CommandParameter="39354"
+            Content="Matches" Margin="5,66,690,338"/>
+        <TextBox Name="Yearr" HorizontalAlignment="Left" Height="23" Margin="107,6,0,0" TextWrapping="Wrap" Text="2020" VerticalAlignment="Top" Width="36"/>
+        <TextBox Name="TrnmntPath" HorizontalAlignment="Left" Height="23" Margin="107,35,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="503"/>
+        <TextBox Name="mtchsPath"  HorizontalAlignment="Left" Height="23" Margin="107,66,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="503"/>
+        <Button Command="{Binding ManageCommand}"
+            HorizontalAlignment="Left"
+            CommandParameter="ChoseTournament"
+            Content="..."
+            Margin="625,35,0,0"
+            Height="23"
+            VerticalAlignment="Top" Width="29" />
+        <Button Command="{Binding ManageCommand}"
+            HorizontalAlignment="Left"
+            CommandParameter="ChoseMatches"
+            Content="..."
+            Margin="625,66,0,0"
+            Height="23"
+            VerticalAlignment="Top" Width="29" />
+
     </Grid>
 </Window>

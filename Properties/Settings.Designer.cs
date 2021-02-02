@@ -25,5 +25,7 @@ namespace AtpParser.Properties
                 return defaultInstance;
             }
         }
+
+        public string LastTournamentPath { get; internal set; }
     }
 }

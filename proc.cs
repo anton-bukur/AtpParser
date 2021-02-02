@@ -105,7 +105,7 @@ namespace AtpParser
             {
                 File.AppendAllText("lost_Matches.txt", url + Environment.NewLine);
                 Thread.Sleep(3000);
-                return Tournament + ex.Message;
+                return null;
             }
 
             tStr = Regex.Match(RespText, "(?<=<div class=\"box boxBasic lGray\"><span class=\"upper\">)[\\w\\W]*?(?=<iframe)").Value.Replace(" ", "");
@@ -413,8 +413,8 @@ namespace AtpParser
 
                             if (betOver[i].Value.Contains("deactivated"))
                             {
-                                tRes = tRes + $"deactivated,{wBet},,,,,,,,," + Environment.NewLine;
-                                res = res + $"deactivated,{wBet},,,,,,,,,";
+                                tRes = tRes + $"deactivated,{wBet},,,," + Environment.NewLine;
+                                res = res + $"deactivated,{wBet},,,,";
                                 continue; //Больше не надо, и так всё ясно
                             }
                             else
@@ -425,7 +425,7 @@ namespace AtpParser
 
                         }
                     }
-                    File.AppendAllText("bet.txt", tRes + Environment.NewLine);
+                    //File.AppendAllText("bet.txt", tRes + Environment.NewLine);
                 }
                 if (tBets.Count == 0)
                 {
