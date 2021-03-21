@@ -4,10 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AtpParser"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="795">
+        Title="ATParser" Height="450" Width="795">
     <Grid Margin="10,0,0,2">
-        <Button Content="Старт" Command="{Binding ManageCommand}" CommandParameter="Start" HorizontalAlignment="Left" Margin="356,364,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Command="{Binding ManageCommand}" 
+                IsEnabled="{Binding StartEnable}" 
+                CommandParameter="Start" 
+                HorizontalAlignment="Left"
+                Margin="356,364,0,0"
+                VerticalAlignment="Top"
+                Width="75"
+                Content="Старт" />
         <RadioButton CommandParameter="39358" VerticalAlignment="Top" HorizontalAlignment="Left"
             Content="Year" Margin="5,10,685,394"/>
         <RadioButton CommandParameter="39353"
@@ -15,8 +23,14 @@
         <RadioButton CommandParameter="39354"
             Content="Matches" Margin="5,66,690,338"/>
         <TextBox Name="Yearr" HorizontalAlignment="Left" Height="23" Margin="107,6,0,0" TextWrapping="Wrap" Text="2020" VerticalAlignment="Top" Width="36"/>
-        <TextBox Name="TrnmntPath" HorizontalAlignment="Left" Height="23" Margin="107,35,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="503"/>
-        <TextBox Name="mtchsPath"  HorizontalAlignment="Left" Height="23" Margin="107,66,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="503"/>
+        <TextBox Name="TrnmntPath1"
+                 HorizontalAlignment="Left" Height="23" Margin="107,35,0,0" TextWrapping="Wrap"
+                 Text="{Binding TrnmntPath, UpdateSourceTrigger=PropertyChanged}"
+                 VerticalAlignment="Top" Width="503"/>
+        <TextBox Name="matchesPath1"  
+                 HorizontalAlignment="Left" Height="23" Margin="107,66,0,0" TextWrapping="Wrap" 
+                 Text="{Binding matchesPath, UpdateSourceTrigger=PropertyChanged}"
+                 VerticalAlignment="Top" Width="503"/>
         <Button Command="{Binding ManageCommand}"
             HorizontalAlignment="Left"
             CommandParameter="ChoseTournament"

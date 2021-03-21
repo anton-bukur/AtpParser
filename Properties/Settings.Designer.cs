@@ -27,5 +27,6 @@ namespace AtpParser.Properties
         }
 
         public string LastTournamentPath { get; internal set; }
+        public string LastmatchesPath { get; internal set; }
     }
 }
