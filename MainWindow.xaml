@@ -25,7 +25,7 @@
         <TextBox Name="Yearr" HorizontalAlignment="Left" Height="23" Margin="107,6,0,0" TextWrapping="Wrap" Text="2020" VerticalAlignment="Top" Width="36"/>
         <TextBox Name="TrnmntPath1"
                  HorizontalAlignment="Left" Height="23" Margin="107,35,0,0" TextWrapping="Wrap"
-                 Text="{Binding TrnmntPath, UpdateSourceTrigger=PropertyChanged}"
+                 Text="{Binding tournamentPath, UpdateSourceTrigger=PropertyChanged}"
                  VerticalAlignment="Top" Width="503"/>
         <TextBox Name="matchesPath1"  
                  HorizontalAlignment="Left" Height="23" Margin="107,66,0,0" TextWrapping="Wrap" 

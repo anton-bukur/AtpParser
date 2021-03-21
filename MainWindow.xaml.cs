@@ -60,9 +60,9 @@ namespace AtpParser
             List<string> listStat = new List<string>();
 
             //List<string> listTournaments = proc.GetTournaments(url);
-            if (TrnmntPath1.Text != null)
+            if (tournamentPath != null)
             {
-                var listTournaments = File.ReadAllLines(TrnmntPath1.Text);
+                var listTournaments = File.ReadAllLines(tournamentPath);
                 foreach (string u in listTournaments)
                 {
                     List<string> listMatches = proc.GetMatches(u);
