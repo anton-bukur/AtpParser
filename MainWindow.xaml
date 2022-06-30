@@ -15,7 +15,7 @@
                 Margin="356,364,0,0"
                 VerticalAlignment="Top"
                 Width="75"
-                Content="Старт" />
+                Content="Start" />
         <RadioButton CommandParameter="39358" VerticalAlignment="Top" HorizontalAlignment="Left"
             Content="Year" Margin="5,10,685,394"/>
         <RadioButton CommandParameter="39353"

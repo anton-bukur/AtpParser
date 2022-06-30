@@ -18,7 +18,7 @@ namespace AtpParser
     public partial class MainWindow : Window
     {
         private ICommand _manageCommand;
-        private static bool _can = true;
+        //private static bool _can = true;
 
         public ICommand ManageCommand => _manageCommand ?? (_manageCommand = new Command(t =>
         {
@@ -55,7 +55,7 @@ namespace AtpParser
         }
         private void PressStart()
         {
-            string Year, path = null;
+            //string Year, path = null;
             //string url = homeUrl + "calendar/atp-men/" + Year + "/";
             List<string> listStat = new List<string>();
 

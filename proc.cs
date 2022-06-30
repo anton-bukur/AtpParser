@@ -1,16 +1,14 @@
 ﻿using AtpParser.Models;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 
 namespace AtpParser
@@ -19,6 +17,8 @@ namespace AtpParser
     class proc
     {
         const string homeUrl = "https://www.tennisexplorer.com/";
+        //private static object excelborderStyle;
+
         public static List<string> GetTournaments(string url)
         {
             var cookieContainer = new CookieContainer();
@@ -101,7 +101,7 @@ namespace AtpParser
                 var Result = client.GetAsync(url).Result;
                 RespText = Result.Content.ReadAsStringAsync().Result;
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 File.AppendAllText("lost_Matches.txt", url + Environment.NewLine);
                 Thread.Sleep(3000);
@@ -443,15 +443,15 @@ namespace AtpParser
             string path = Directory.GetCurrentDirectory() + $"\\ReadyExcel\\{DateTime.Now.ToString("yyyy-MM-dd_hh_mm_ss")}_parse.xlsx";
             int i = 0;
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            ExcelPackage excelPackage = new ExcelPackage(new FileInfo(path));
-            ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Лист1");
-            //worksheet.Cells.Style.Border.Top.Style = worksheet.Cells.Style.Border.Left.Style = worksheet.Cells.Style.Border.Right.Style = worksheet.Cells.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+            ExcelPackage excelpackage = new ExcelPackage(new FileInfo(path));
+            ExcelWorksheet worksheet = excelpackage.Workbook.Worksheets.Add("лист1");
+            //worksheet.Cells.Style.Border.Top.Style = worksheet.Cells.Style.Border.Left.Style = worksheet.Cells.Style.Border.Right.Style = worksheet.Cells.Style.Border.Bottom.Style = excelborderStyle.thi;
             worksheet.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-            //Tournament,Date,Surface,Round,Winner,Loser,WRank,LRank,W1,L1,W2,L2,W3,L3,W4,L4,W5,L5,WT1,LT1,WT2,LT2,WT3,LT3,WT4,LT4,WT5,LT5,Wsets,Lsets,BetType,Bookmaker,WOpenDate,WBetOpen,WfinDate,WBetFin,WDelta,LopenDate,Lbet,LfinDate,Lbet,Ldelta...et cetera...
-            worksheet.Cells[1, 1].Value = "Tournament,Date,Surface,Round,Winner,Loser,WRank,LRank,W1,L1,W2,L2,W3,L3,W4,L4,W5,L5,WT1,LT1,WT2,LT2,WT3,LT3,WT4,LT4,WT5,LT5,Wsets,Lsets,BetType,Bookmaker,WOpenDate,WBetOpen,WfinDate,WBetFin,WDelta,LopenDate,Lbet,LfinDate,Lbet,Ldelta...et cetera...";
+            //tournament,date,surface,round,winner,loser,wrank,lrank,w1,l1,w2,l2,w3,l3,w4,l4,w5,l5,wt1,lt1,wt2,lt2,wt3,lt3,wt4,lt4,wt5,lt5,wsets,lsets,bettype,bookmaker,wopendate,wbetopen,wfindate,wbetfin,wdelta,lopendate,lbet,lfindate,lbet,ldelta...et cetera...
+            worksheet.Cells[1, 1].Value = "tournament,date,surface,round,winner,loser,wrank,lrank,w1,l1,w2,l2,w3,l3,w4,l4,w5,l5,wt1,lt1,wt2,lt2,wt3,lt3,wt4,lt4,wt5,lt5,wsets,lsets,bettype,bookmaker,wopendate,wbetopen,wfindate,wbetfin,wdelta,lopendate,lbet,lfindate,lbet,ldelta...et cetera...";
             for (i = 0; i < allStats.Count; i++)
                 worksheet.Cells[i + 2, 1].Value = allStats[i];
-            excelPackage.Save();
+            excelpackage.Save();
         }
     }
 }
